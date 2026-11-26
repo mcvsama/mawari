@@ -1,0 +1,19 @@
+[Desktop Entry]
+Type=Application
+Name=Mawari
+GenericName=360° Photo Viewer
+GenericName[pl]=Przeglądarka zdjęć 360°
+GenericName[ja]=360° 写真ビューアー
+GenericName[uk]=Переглядач фотографій 360°
+GenericName[fr]=Visionneuse de photos à 360°
+Comment=View equirectangular 360° panoramas
+Comment[pl]=Przeglądaj panoramy 360° w odwzorowaniu walcowym równoodległościowym
+Comment[ja]=正距円筒図法の 360° パノラマを表示
+Comment[uk]=Переглядайте панорами 360° у рівнопроміжній циліндричній проєкції
+Comment[fr]=Afficher des panoramas équirectangulaires à 360°
+TryExec=mawari
+Exec=mawari %f
+Icon=mawari
+Terminal=false
+Categories=Graphics;Viewer;Photography;
+StartupWMClass=Mawari

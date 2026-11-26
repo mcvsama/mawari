@@ -1,0 +1,30 @@
+# Resolve the executable at install time so --prefix overrides and DESTDIR work.
+set(mawari_bindir [==[@CMAKE_INSTALL_BINDIR@]==])
+set(mawari_datadir [==[@CMAKE_INSTALL_DATADIR@]==])
+foreach(directory mawari_bindir mawari_datadir)
+    if(NOT IS_ABSOLUTE "${${directory}}")
+        set(${directory} "${CMAKE_INSTALL_PREFIX}/${${directory}}")
+    endif()
+endforeach()
+
+# Desktop Entry Exec values have both argument quoting and string escaping.
+# Encode a literal % as %% before adding the %f field code.
+set(mawari_exec "${mawari_bindir}/mawari")
+if(mawari_exec MATCHES "[=\n\r]")
+    message(FATAL_ERROR "The installation path cannot contain '=', a newline or a carriage return (Desktop Entry Exec restriction).")
+endif()
+string(REPLACE "\\" "\\\\" mawari_try_exec "${mawari_exec}")
+string(REPLACE "\\" "\\\\" mawari_exec "${mawari_exec}")
+foreach(character "\"" "`" "$")
+    string(REPLACE "${character}" "\\${character}" mawari_exec "${mawari_exec}")
+endforeach()
+string(REPLACE "\\" "\\\\" mawari_exec "${mawari_exec}")
+string(REPLACE "%" "%%" mawari_exec "${mawari_exec}")
+
+file(READ [==[@CMAKE_CURRENT_SOURCE_DIR@/assets/mawari.desktop]==] mawari_desktop)
+string(REPLACE "TryExec=mawari" "TryExec=${mawari_try_exec}" mawari_desktop "${mawari_desktop}")
+string(REPLACE "Exec=mawari %f" "Exec=\"${mawari_exec}\" %f" mawari_desktop "${mawari_desktop}")
+# An absolute PNG path also works when the desktop has cached an icon-name miss.
+string(REPLACE "\\" "\\\\" mawari_icon "${mawari_datadir}/icons/hicolor/256x256/apps/mawari.png")
+string(REPLACE "Icon=mawari\n" "Icon=${mawari_icon}\n" mawari_desktop "${mawari_desktop}")
+file(WRITE "$ENV{DESTDIR}${mawari_datadir}/applications/mawari.desktop" "${mawari_desktop}")
